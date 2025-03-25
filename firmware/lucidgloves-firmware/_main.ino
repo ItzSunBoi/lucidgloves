@@ -11,7 +11,7 @@ void setup() {
   #if COMMUNICATION == COMM_SERIAL
     comm = new SerialCommunication();
   #elif COMMUNICATION == COMM_BTSERIAL
-    comm = new BTSerialCommunication();
+    comm = new SerialBTCommunication();
   #endif  
   comm->start();
 

@@ -8,7 +8,7 @@
 
 //This is the configuration file, main structure in _main.ino
 //CONFIGURATION SETTINGS:
-#define COMMUNICATION COMM_SERIAL //Which communication protocol to use
+#define COMMUNICATION COMM_BTSERIAL //Which communication protocol to use
 //serial over USB
   #define SERIAL_BAUD_RATE 115200
   

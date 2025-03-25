@@ -1,13 +1,16 @@
-//only compiles if BTSerial is set because it won't compile for a non-compatible board
-#if COMMUNICATION == COMM_BTSERIAL
-#include "BluetoothSerial.h"
-class BTSerialCommunication : public ICommunication {
+#include "HardwareSerial.h"
+
+#define RX0 44  // Define explicitly according to your hardware
+#define TX0 43  // Define explicitly according to your hardware
+#define MAX_INPUT_LENGTH 128  // Adjust as needed
+
+class SerialBTCommunication : public ICommunication {
   private:
     bool m_isOpen;
-    BluetoothSerial m_SerialBT;
-    
+    HardwareSerial UARTSerial = HardwareSerial(0); // Using UART0 (TX0, RX0)
+
   public:
-    BTSerialCommunication() {
+    SerialBTCommunication() {
       m_isOpen = false;
     }
 
@@ -16,22 +19,22 @@ class BTSerialCommunication : public ICommunication {
     }
 
     void start(){
-      Serial.begin(115200);
-      m_SerialBT.begin(BTSERIAL_DEVICE_NAME);
-      Serial.println("The device started, now you can pair it with bluetooth!");
+      UARTSerial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, RX0, TX0);
       m_isOpen = true;
     }
 
     void output(char* data){
-      m_SerialBT.print(data);
+      if(m_isOpen){
+        UARTSerial.print(data);
+      }
     }
 
     bool readData(char* input){
-      /*byte size = m_SerialBT.readBytesUntil('\n', input, 100);
-      input[size] = NULL;*/
-      String message = m_SerialBT.readStringUntil('\n');
-      strcpy(input, message.c_str());
-      return input != NULL && strlen(input) > 0;
+      if(m_isOpen && UARTSerial.available()){
+        size_t len = UARTSerial.readBytesUntil('\n', input, MAX_INPUT_LENGTH);
+        input[len] = '\0';
+        return true;
+      }
+      return false;
     }
 };
-#endif
